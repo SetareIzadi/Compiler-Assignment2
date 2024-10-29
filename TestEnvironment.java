@@ -12,8 +12,8 @@ public class TestEnvironment {
 		System.out.println("A: " + env.getVariable("A")); // Should print: A: true
 		System.out.println("B: " + env.getVariable("B")); // Should print: B: false
 
-		// Testing function definitions (assuming `Def` class is defined)
-		List<Def> definitions = new ArrayList<>(); // Assume Def objects are populated
+		// Testing function definitions with 'Def' class
+		List<Def> definitions = new ArrayList<>();
 		Environment envWithDefs = new Environment(definitions);
 
 		// Display environment values
