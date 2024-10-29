@@ -17,39 +17,78 @@ public abstract class AST{
    (Negation). Moreover, an expression can be using any of the
    functions defined in the definitions. */
 
-abstract class Expr extends AST{}
+abstract class Expr extends AST{
+    public abstract Boolean eval(Environment env);
+}
 
 class Conjunction extends Expr{
     // Example: Signal1 * Signal2 
     Expr e1,e2;
-    Conjunction(Expr e1,Expr e2){this.e1=e1; this.e2=e2;}
-}
+    Conjunction(Expr e1,Expr e2) {
+        this.e1=e1;
+        this.e2=e2;
+    }
 
-class Disjunction extends Expr{
-    // Example: Signal1 + Signal2 
-    Expr e1,e2;
-    Disjunction(Expr e1,Expr e2){this.e1=e1; this.e2=e2;}
-}
-
-class Negation extends Expr{
-    // Example: /Signal
-    Expr e;
-    Negation(Expr e){this.e=e;}
-}
-
-class UseDef extends Expr{
-    // Using any of the functions defined by "def"
-    // e.g. xor(Signal1,/Signal2) 
-    String f;  // the name of the function, e.g. "xor" 
-    List<Expr> args;  // arguments, e.g. [Signal1, /Signal2]
-    UseDef(String f, List<Expr> args){
-	this.f=f; this.args=args;
+    @Override
+    public Boolean eval(Environment env) {
+        return null;
     }
 }
 
-class Signal extends Expr{
-    String varname; // a signal is just identified by a name 
-    Signal(String varname){this.varname=varname;}
+class Disjunction extends Expr {
+    Expr e1, e2;
+
+    Disjunction(Expr e1, Expr e2) {
+        this.e1 = e1;
+        this.e2 = e2;
+    }
+
+    @Override
+    public Boolean eval(Environment env) {
+        return e1.eval(env) || e2.eval(env);
+    }
+}
+
+class Negation extends Expr {
+    Expr e;
+
+    Negation(Expr e) {
+        this.e = e;
+    }
+
+    @Override
+    public Boolean eval(Environment env) {
+        return !e.eval(env);
+    }
+}
+
+class UseDef extends Expr {
+    String f;
+    List<Expr> args;
+
+    UseDef(String f, List<Expr> args) {
+        this.f = f;
+        this.args = args;
+    }
+
+    @Override
+    public Boolean eval(Environment env) {
+        error("Use of user-defined function '" + f + "' is not implemented yet.");
+        return null;
+    }
+}
+
+class Signal extends Expr {
+    String varname;
+
+    Signal(String varname) {
+        this.varname = varname;
+    }
+
+    @Override
+    public Boolean eval(Environment env) {
+        return env.getVariable(varname);
+    }
 }
 
 class Def extends AST{
