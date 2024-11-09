@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
 
+
+/*
 public class TestEnvironment {
 	public static void main(String[] args) {
 		Environment env = new Environment();
@@ -20,3 +22,4 @@ public class TestEnvironment {
 		System.out.println(env);
 	}
 }
+*/

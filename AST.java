@@ -31,7 +31,7 @@ class Conjunction extends Expr{
 
     @Override
     public Boolean eval(Environment env) {
-        return null;
+        return e1.eval(env) && e2.eval(env);
     }
 }
 
@@ -173,3 +173,16 @@ class Circuit extends AST{
 	this.siminputs=siminputs;
     }
 }
+
+class EnvironmentTest {
+    private HashMap<String, Boolean> variables = new HashMap<>();
+
+    public void setVariable(String name, Boolean value) {
+        variables.put(name, value);
+    }
+
+    public Boolean getVariable(String name) {
+        return variables.getOrDefault(name, false);
+    }
+}
+
