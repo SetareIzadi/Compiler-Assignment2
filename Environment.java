@@ -16,7 +16,7 @@ class Environment {
     public Environment(){ this.defs=new HashMap<String,Def>();} 
 
     // Constructor that compute the map of function definitions, given
-    // a the set of definitions as available in Circuit. You can then
+    // the set of definitions as available in Circuit. You can then
     // use getDef() below.    
     public Environment(List<Def> listdefs) {
 	defs=new HashMap<String,Def>();
