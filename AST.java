@@ -260,7 +260,7 @@ class Circuit extends AST {
 
     // Run the entire simulation
     public void runSimulator() {
-        Environment env = new Environment();
+        Environment env = new Environment(this.definitions);
         initialize(env); // Perform initialization
 
         for (int i = 1; i < simlength; i++) {
