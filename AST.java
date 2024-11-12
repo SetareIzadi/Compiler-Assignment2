@@ -71,8 +71,21 @@ class UseDef extends Expr {
 
     @Override
     public Boolean eval(Environment env) {
-        error("Use of user-defined function '" + f + "' is not implemented yet.");
-        return null;
+        // Step 1: Retrieve the function definition
+        Def functionDef = env.getDef(f);
+
+        // Step 2: Create a new environment specifically for this function call
+        Environment functionEnv = new Environment(env);
+
+        // Step 3: Assign values to the function's parameters
+        for (int i = 0; i < functionDef.args.size(); i++) {
+            String param = functionDef.args.get(i);
+            Boolean argValue = args.get(i).eval(env); // Evaluate argument in the original environment
+            functionEnv.setVariable(param, argValue); // Set the parameter in the function's environment
+        }
+
+        // Step 4: Evaluate the function body in the new environment
+        return functionDef.e.eval(functionEnv);
     }
 }
 

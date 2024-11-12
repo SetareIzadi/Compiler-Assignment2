@@ -50,7 +50,6 @@ class Environment {
 	if (value == null) { System.err.println("Variable not defined: "+name); System.exit(-1); }
 	return value;
     }
-
     public Boolean hasVariable(String name){
 	Boolean v = variableValues.get(name); 
 	return (v != null);	

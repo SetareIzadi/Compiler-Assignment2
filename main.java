@@ -10,17 +10,17 @@ import java.util.ArrayList;
 import java.io.IOException;
 
 public class main {
-    public static void main(String[] args) throws IOException{
+	public static void main(String[] args) throws IOException {
 
-	// we expect exactly one argument: the name of the input file
-	if (args.length!=1) {
-	    System.err.println("\n");
-	    System.err.println("Hardware Simulator\n");
-	    System.err.println("==================\n\n");
-	    System.err.println("Please give as input argument a filename\n");
-	    System.exit(-1);
-	}
-	String filename=args[0];
+		// Check that exactly one argument is provided
+		if (args.length != 1) {
+			System.err.println("\n");
+			System.err.println("Hardware Simulator\n");
+			System.err.println("==================\n\n");
+			System.err.println("Please give as input argument a filename\n");
+			System.exit(-1);
+		}
+		String filename = args[0];
 
 	// open the input file
 	CharStream input = CharStreams.fromFileName(filename);
