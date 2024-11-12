@@ -3,30 +3,25 @@ import java.util.Map.Entry;
 import java.util.List;
 import java.util.ArrayList;
 
-public abstract class AST{
-    public void error(String msg){
+public abstract class AST {
+    public void error(String msg) {
         System.err.println(msg);
         System.exit(-1);
     }
-};
+}
 
-/* Expressions are similar to arithmetic expressions in the impl
-   language: the atomic expressions are just Signal (similar to
-   variables in expressions) and they can be composed to larger
-   expressions with And (Conjunction), Or (Disjunction), and Not
-   (Negation). Moreover, an expression can be using any of the
-   functions defined in the definitions. */
-
-abstract class Expr extends AST{
+// Abstract class for expressions
+abstract class Expr extends AST {
     public abstract Boolean eval(Environment env);
 }
 
-class Conjunction extends Expr{
-    // Example: Signal1 * Signal2 
-    Expr e1,e2;
-    Conjunction(Expr e1,Expr e2) {
-        this.e1=e1;
-        this.e2=e2;
+// Logical AND operation
+class Conjunction extends Expr {
+    Expr e1, e2;
+
+    Conjunction(Expr e1, Expr e2) {
+        this.e1 = e1;
+        this.e2 = e2;
     }
 
     @Override
@@ -35,6 +30,7 @@ class Conjunction extends Expr{
     }
 }
 
+// Logical OR operation
 class Disjunction extends Expr {
     Expr e1, e2;
 
@@ -49,6 +45,7 @@ class Disjunction extends Expr {
     }
 }
 
+// Logical NOT operation
 class Negation extends Expr {
     Expr e;
 
@@ -62,6 +59,7 @@ class Negation extends Expr {
     }
 }
 
+// Using user-defined functions (not implemented yet)
 class UseDef extends Expr {
     String f;
     List<Expr> args;
@@ -92,6 +90,13 @@ class UseDef extends Expr {
 }
 
     class Signal extends Expr {
+        error("Use of user-defined function '" + f + "' is not implemented yet.");
+        return null;
+    }
+}
+
+// Signals represent atomic expressions
+class Signal extends Expr {
     String varname;
 
     Signal(String varname) {
@@ -104,78 +109,57 @@ class UseDef extends Expr {
     }
 }
 
-class Def extends AST{
-    // Definition of a function
-    // Example: def xor(A,B) = A * /B + /A * B
-    String f; // function name, e.g. "xor"
-    List<String> args;  // formal arguments, e.g. [A,B]
-    Expr e;  // body of the definition, e.g. A * /B + /A * B
-    Def(String f, List<String> args, Expr e){
-        this.f=f; this.args=args; this.e=e;
+// Definitions for user-defined functions
+class Def extends AST {
+    String f; // Function name, e.g., "xor"
+    List<String> args; // Formal arguments, e.g., [A, B]
+    Expr e; // Function body, e.g., A * /B + /A * B
+
+    Def(String f, List<String> args, Expr e) {
+        this.f = f;
+        this.args = args;
+        this.e = e;
     }
 }
 
-// An Update is any of the lines " signal = expression "
-// in the update section
+// Update represents signal updates in the circuit
+class Update extends AST {
+    String name; // Signal being updated
+    Expr e; // Value assigned to the signal
 
-class Update extends AST{
-    // Example Signal1 = /Signal2
-    String name; // Signal being updated, e.g. "Signal1"
-    Expr e; // The value it receives, e.g., "/Signal2"
-    Update(String name, Expr e){
-        this.e=e;
-        this.name=name;
+    Update(String name, Expr e) {
+        this.name = name;
+        this.e = e;
     }
 
     public void eval(Environment env) {
-        env.setVariable(name, e.eval(env));
+        Boolean value = e.eval(env); // Evaluate the expression
+        env.setVariable(name, value); // Update the signal's value in the environment
     }
 }
 
-/* A Trace is a signal and an array of Booleans, for instance each
-   line of the .simulate section that specifies the traces for the
-   input signals of the circuit. It is suggested to use this class
-   also for the output signals of the circuit in the second
-   assignment.
-*/
-
-class Trace extends AST{
-    // Example Signal could be: 0101010
+// Trace represents the value of a signal over time
+class Trace extends AST {
     String signal;
     Boolean[] values;
-    Trace(String signal, Boolean[] values){
-        this.signal=signal;
-        this.values=values;
+
+    Trace(String signal, Boolean[] values) {
+        this.signal = signal;
+        this.values = values;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append(signal).append(" = ");
         for (Boolean value : values) {
             sb.append(value ? "1" : "0");
         }
-        sb.append(" ").append(signal);
         return sb.toString();
     }
 }
 
-/* The main data structure of this simulator: the entire circuit with
-   its inputs, outputs, latches, definitions and updates. Additionally
-   for each input signal, it has a Trace as simulation input.
-
-   There are two variables that are not part of the abstract syntax
-   and thus not initialized by the constructor (so far): simoutputs
-   and simlength. It is suggested to use these two variables for
-   assignment 2 as follows:
-
-   1. all siminputs should have the same length (this is part of the
-   checks that you should implement). set simlength to this length: it
-   is the number of simulation cycles that the interpreter should run.
-
-   2. use the simoutputs to store the value of the output signals in
-   each simulation cycle, so they can be displayed at the end. These
-   traces should also finally have the length simlength.
-*/
-
+// Main circuit class
 class Circuit extends AST {
     String name;
     List<String> inputs;
@@ -184,15 +168,11 @@ class Circuit extends AST {
     List<Def> definitions;
     List<Update> updates;
     List<Trace> siminputs;
+    List<Trace> simoutputs;
     int simlength;
 
-    Circuit(String name,
-            List<String> inputs,
-            List<String> outputs,
-            List<String> latches,
-            List<Def> definitions,
-            List<Update> updates,
-            List<Trace> siminputs) {
+    Circuit(String name, List<String> inputs, List<String> outputs, List<String> latches,
+            List<Def> definitions, List<Update> updates, List<Trace> siminputs) {
         this.name = name;
         this.inputs = inputs;
         this.outputs = outputs;
@@ -201,103 +181,96 @@ class Circuit extends AST {
         this.updates = updates;
         this.siminputs = siminputs;
 
-        // Initialize sim length based on sim inputs
-        if (!siminputs.isEmpty()) {
-            simlength = siminputs.get(0).values.length; // Assuming all traces have the same length
+        // Validate siminputs length
+        if (siminputs.isEmpty()) {
+            error("No simulation inputs provided.");
+        }
+
+        simlength = siminputs.get(0).values.length;
+        for (Trace trace : siminputs) {
+            if (trace.values.length != simlength) {
+                error("All simulation inputs must have the same length.");
+            }
         }
     }
 
-    void initialize(Environment env) {
-        // Step 1: Set initial input signals at time point 0
-        for (String input : inputs) {
-            Trace trace = findTrace(input);
-            if (trace == null || trace.values.length == 0) {
-                error("Siminput not defined or has length 0 for input signal: " + input);
+    // Initialize latch outputs to false
+    public void latchesInit(Environment env) {
+        for (String latch : latches) {
+            String output = latch + "'"; // Generate the output name, e.g., A -> A'
+            env.setVariable(output, false); // Initialize to false
+        }
+    }
+
+    // Update latch outputs to current input values
+    public void latchesUpdate(Environment env) {
+        for (String latch : latches) {
+            String output = latch + "'"; // Generate the output name, e.g., A -> A'
+            Boolean value = env.getVariable(latch); // Get the current input signal
+            env.setVariable(output, value); // Update the latch output
+        }
+    }
+
+    // Initialize the circuit
+    public void initialize(Environment env) {
+        // Set input signals from siminputs
+        for (Trace trace : siminputs) {
+            String signal = trace.signal;
+            if (trace.values.length == 0) {
+                error("Siminput for signal " + signal + " is not defined.");
             }
-            env.setVariable(input, trace.values[0]);  // Set initial value for time point 0
+            env.setVariable(signal, trace.values[0]); // Use first value at time 0
         }
 
-        // Step 2: Initialize latch outputs
+        // Initialize latch inputs if not already set
+        for (String latch : latches) {
+            if (!env.hasVariable(latch)) {
+                env.setVariable(latch, false); // Initialize to false
+            }
+        }
+
+        // Initialize latch outputs
         latchesInit(env);
 
-        // Step 3: Initialize remaining signals by evaluating updates
+        // Evaluate all updates
         for (Update update : updates) {
-            update.eval(env);  // Run eval method of each Update
+            update.eval(env);
         }
 
-        // Step 4: Print the environment
-        System.out.println(env);
+        // Print the environment after initialization
+        System.out.println("Environment after initialization:\n" + env.toString());
     }
 
-    void nextCycle(Environment env, int cycle) {
-        // Step 1: Update input signals based on cycle number
-        for (String input : inputs) {
-            Trace trace = findTrace(input);
-            if (trace == null || cycle >= trace.values.length) {
-                error("Siminput not defined for input signal: " + input + " at cycle " + cycle);
+    // Simulate one cycle
+    public void nextCycle(Environment env, int i) {
+        // Set input signals for the current cycle
+        for (Trace trace : siminputs) {
+            String signal = trace.signal;
+            if (i >= trace.values.length) {
+                error("Siminput for signal " + signal + " is not defined for time " + i + ".");
             }
-            env.setVariable(input, trace.values[cycle]);  // Update input for the current cycle
+            env.setVariable(signal, trace.values[i]); // Use i-th value for the current cycle
         }
 
-        // Step 2: Update latches
+        // Update latch outputs
         latchesUpdate(env);
 
-        // Step 3: Update remaining signals by evaluating updates
+        // Evaluate all updates
         for (Update update : updates) {
-            update.eval(env);  // Run eval method of each Update
+            update.eval(env);
         }
 
-        // Step 4: Print the environment
-        System.out.println(env);
+        // Print the environment for the current cycle
+        System.out.println("Environment after cycle " + i + ":\n" + env.toString());
     }
 
-    // New method to run the simulator
-    void runSimulator(Environment env) {
-        // First initialize the environment
-        initialize(env);
+    // Run the entire simulation
+    public void runSimulator() {
+        Environment env = new Environment();
+        initialize(env); // Perform initialization
 
-        // Then run nextCycle for each cycle up to simlength
-        for (int cycle = 1; cycle < simlength; cycle++) {
-            nextCycle(env, cycle);  // Cycle starts from 0 in initialize, so we start from 1 here
+        for (int i = 1; i < simlength; i++) {
+            nextCycle(env, i); // Simulate each cycle
         }
-    }
-
-    // Helper function to find a Trace by signal name
-    private Trace findTrace(String signalName) {
-        for (Trace trace : siminputs) {
-            if (trace.signal.equals(signalName)) {
-                return trace;
-            }
-        }
-        return null; // Not found
-    }
-
-    void latchesInit(Environment env) {
-        // Initialize all latch outputs (e.g., A', B', C') to 0
-        for (String latch : latches) {
-            String latchOutput = latch + "'";  // Append prime to denote latch output
-            env.setVariable(latchOutput, false);  // Initialize latch output to 0 (false)
-        }
-    }
-
-    void latchesUpdate(Environment env) {
-        // Update each latch output to the current value of its corresponding input
-        for (String latch : latches) {
-            String latchOutput = latch + "'";  // Latch output name with prime
-            Boolean latchInputValue = env.getVariable(latch);  // Get current value of latch input
-            env.setVariable(latchOutput, latchInputValue);  // Set output to input's current value
-        }
-    }
-}
-
-class EnvironmentTest {
-    private HashMap<String, Boolean> variables = new HashMap<>();
-
-    public void setVariable(String name, Boolean value) {
-        variables.put(name, value);
-    }
-
-    public Boolean getVariable(String name) {
-        return variables.getOrDefault(name, false);
     }
 }
