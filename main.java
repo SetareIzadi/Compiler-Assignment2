@@ -10,55 +10,49 @@ import java.util.ArrayList;
 import java.io.IOException;
 
 public class main {
-    public static void main(String[] args) throws IOException{
+	public static void main(String[] args) throws IOException {
 
-	// we expect exactly one argument: the name of the input file
-	if (args.length!=1) {
-	    System.err.println("\n");
-	    System.err.println("Hardware Simulator\n");
-	    System.err.println("==================\n\n");
-	    System.err.println("Please give as input argument a filename\n");
-	    System.exit(-1);
+		// Check that exactly one argument is provided
+		if (args.length != 1) {
+			System.err.println("\n");
+			System.err.println("Hardware Simulator\n");
+			System.err.println("==================\n\n");
+			System.err.println("Please give as input argument a filename\n");
+			System.exit(-1);
+		}
+		String filename = args[0];
+
+		// Open the input file
+		CharStream input = CharStreams.fromFileName(filename);
+
+		// Create a lexer/scanner
+		hwLexer lex = new hwLexer(input);
+
+		// Get the stream of tokens from the scanner
+		CommonTokenStream tokens = new CommonTokenStream(lex);
+
+		// Create a parser
+		hwParser parser = new hwParser(tokens);
+
+		// Parse the input file based on the grammar starting at "start"
+		ParseTree parseTree = parser.start();
+
+		// Generate HTML/Jax output (for assignment 1)
+		String result = new JaxMaker().visit(parseTree);
+		System.out.println("\n\n\n" + result);
+
+		// Generate the AST for assignment 2, creating a Circuit object
+		Circuit p = (Circuit) new AstMaker().visit(parseTree);
+
+		// Step 1: Create the Environment with function definitions from the Circuit
+		Environment env = new Environment(p.definitions);
+
+		// Step 2: Run the simulator
+		System.out.println("Running simulation for " + filename + "...");
+		p.runSimulator(env);  // This runs the simulation based on the Circuit p and prints outputs
+		System.out.println("Simulation complete.");
 	}
-	String filename=args[0];
-
-	// open the input file
-	CharStream input = CharStreams.fromFileName(filename);
-	    //new ANTLRFileStream (filename); // depricated
-	
-	// create a lexer/scanner
-	hwLexer lex = new hwLexer(input);
-	
-	// get the stream of tokens from the scanner
-	CommonTokenStream tokens = new CommonTokenStream(lex);
-	
-	// create a parser
-	hwParser parser = new hwParser(tokens);
-	
-	// and parse anything from the grammar for "start"
-	ParseTree parseTree = parser.start();
-
-	// The JaxMaker is a visitor that produces html/jax output as a string
-	String result = new JaxMaker().visit(parseTree);
-	System.out.println("\n\n\n"+result);
-
-	/* The AstMaker generates the abstract syntax to be used for
-	   the second assignment, where for the start symbol of the
-	   ANTLR grammar, it generates an object of class Circuit (see
-	   AST.java). */
-	
-	Circuit p = (Circuit) new AstMaker().visit(parseTree);
-
-	/* For the second assignment you need to extend the classes of
-	    AST.java with some methods that correspond to running a
-	    simulation of the given hardware for given simulation
-	    inputs. The method for starting the simulation should be
-	    called here for the Circuit p. */
-    }
 }
-
-// The visitor for producing html/jax -- solution for assignment 1, task 3:
-
 class JaxMaker extends AbstractParseTreeVisitor<String> implements hwVisitor<String> {
 
     public String visitStart(hwParser.StartContext ctx){
