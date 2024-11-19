@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
 
+
+
+//Task3
+
+
 public class main {
 	public static void main(String[] args) throws IOException {
 
@@ -17,47 +22,33 @@ public class main {
 			System.err.println("\n");
 			System.err.println("Hardware Simulator\n");
 			System.err.println("==================\n\n");
-			System.err.println("Please give as input argument a filename\n");
+			System.err.println("Please provide a filename.\n");
 			System.exit(-1);
 		}
+
 		String filename = args[0];
+		CharStream input = CharStreams.fromFileName(filename);
 
-	// open the input file
-	CharStream input = CharStreams.fromFileName(filename);
-	    //new ANTLRFileStream (filename); // depricated
+		// Create lexer and parser
+		hwLexer lex = new hwLexer(input);
+		CommonTokenStream tokens = new CommonTokenStream(lex);
+		hwParser parser = new hwParser(tokens);
 
-	// create a lexer/scanner
-	hwLexer lex = new hwLexer(input);
+		// Parse input and generate Circuit object
+		ParseTree parseTree = parser.start();
+		Circuit circuit = (Circuit) new AstMaker().visit(parseTree);
 
-	// get the stream of tokens from the scanner
-	CommonTokenStream tokens = new CommonTokenStream(lex);
-
-	// create a parser
-	hwParser parser = new hwParser(tokens);
-
-	// and parse anything from the grammar for "start"
-	ParseTree parseTree = parser.start();
-
-	// The JaxMaker is a visitor that produces html/jax output as a string
-	//String result = new JaxMaker().visit(parseTree);
-	//System.out.println("\n\n\n"+result);
-
-	/* The AstMaker generates the abstract syntax to be used for
-	   the second assignment, where for the start symbol of the
-	   ANTLR grammar, it generates an object of class Circuit (see
-	   AST.java). */
-
-	Circuit p = (Circuit) new AstMaker().visit(parseTree);
-	p.runSimulator();
-	System.out.println("Simulation complete.");
+		// Run the simulator
+		circuit.runSimulator();
+	}
+}
 
 	/* For the second assignment you need to extend the classes of
 	    AST.java with some methods that correspond to running a
 	    simulation of the given hardware for given simulation
 	    inputs. The method for starting the simulation should be
 	    called here for the Circuit p. */
-    }
-}
+
 
 // The visitor for producing html/jax -- solution for assignment 1, task 3:
 
