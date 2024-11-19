@@ -133,6 +133,9 @@ class Update extends AST {
 }
 
 // Trace represents the value of a signal over time
+
+
+
 class Trace extends AST {
     String signal;
     Boolean[] values;
@@ -162,7 +165,7 @@ class Circuit extends AST {
     List<Def> definitions;
     List<Update> updates;
     List<Trace> siminputs;
-    List<Trace> simoutputs;
+    List<Trace> simoutputs; // To store simulation traces
     int simlength;
 
     Circuit(String name, List<String> inputs, List<String> outputs, List<String> latches,
@@ -174,6 +177,7 @@ class Circuit extends AST {
         this.definitions = definitions;
         this.updates = updates;
         this.siminputs = siminputs;
+        this.simoutputs = new ArrayList<>(); // Initialize simoutputs list
 
         // Validate siminputs length
         if (siminputs.isEmpty()) {
@@ -258,6 +262,35 @@ class Circuit extends AST {
         System.out.println("Environment after cycle " + i + ":\n" + env.toString());
     }
 
+    // Record traces for inputs, outputs, and latches
+    private void recordTraces(Environment env) {
+        for (String input : inputs) {
+            recordTrace(env, input);
+        }
+        for (String output : outputs) {
+            recordTrace(env, output);
+        }
+        for (String latch : latches) {
+            recordTrace(env, latch + "'");
+        }
+    }
+
+    // Helper to record a single signal trace
+    private void recordTrace(Environment env, String signal) {
+        Boolean[] traceValues = new Boolean[simlength];
+        for (int i = 0; i < simlength; i++) {
+            traceValues[i] = env.getVariable(signal);
+        }
+        simoutputs.add(new Trace(signal, traceValues));
+    }
+
+    // Print all traces after the simulation
+    public void printTraces() {
+        for (Trace trace : simoutputs) {
+            System.out.println(trace);
+        }
+    }
+
     // Run the entire simulation
     public void runSimulator() {
         Environment env = new Environment(this.definitions);
@@ -266,5 +299,8 @@ class Circuit extends AST {
         for (int i = 1; i < simlength; i++) {
             nextCycle(env, i); // Simulate each cycle
         }
+
+        recordTraces(env); // Record traces after all cycles
+        printTraces(); // Print traces after simulation
     }
 }
