@@ -10,10 +10,7 @@ import java.util.ArrayList;
 import java.io.IOException;
 
 
-
-//Task3
-
-
+// Task 3
 public class main {
 	public static void main(String[] args) throws IOException {
 
