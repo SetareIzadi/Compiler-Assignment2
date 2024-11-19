@@ -9,3 +9,17 @@ out/*
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
+
+# Generated
+*.class
+hw.interp
+hwLexer.interp
+hwLexer.tokens
+hw.tokens
+hwLexer.java
+hwParser.java
+hwBaseVisitor.java
+hwVisitor.java
+hwBaseListener.java
+hwListener.java
