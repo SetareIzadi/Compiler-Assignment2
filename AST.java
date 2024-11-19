@@ -152,7 +152,8 @@ class Trace extends AST {
     }
 }
 
-// Main Circuit class
+
+// Updated for task 3 circuit class
 class Circuit extends AST {
     String name;
     List<String> inputs;
@@ -178,7 +179,7 @@ class Circuit extends AST {
             error("No simulation inputs provided.");
         }
 
-        simlength = siminputs.get(0).values.length;
+        simlength = siminputs.getFirst().values.length;
         for (Trace trace : siminputs) {
             if (trace.values.length != simlength) {
                 error("All simulation inputs must have the same length.");
