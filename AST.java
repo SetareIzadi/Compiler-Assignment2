@@ -144,10 +144,10 @@ class Trace extends AST {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(signal).append(" = ");
         for (Boolean value : values) {
             sb.append(value ? "1" : "0");
         }
+        sb.append(" ").append(signal);
         return sb.toString();
     }
 }
