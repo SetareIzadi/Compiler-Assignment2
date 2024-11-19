@@ -1,0 +1,25 @@
+out/*
+# Default ignored files
+/shelf/
+/workspace.xml
+.idea/*
+*.html
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+
+
+# Generated
+*.class
+hw.interp
+hwLexer.interp
+hwLexer.tokens
+hw.tokens
+hwLexer.java
+hwParser.java
+hwBaseVisitor.java
+hwVisitor.java
+hwBaseListener.java
+hwListener.java

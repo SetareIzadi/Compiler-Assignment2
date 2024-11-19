@@ -1,8 +1,7 @@
-import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.List;
 import java.util.ArrayList;
 
+// Abstract Syntax Tree Base Class
 public abstract class AST {
     public void error(String msg) {
         System.err.println(msg);
@@ -59,7 +58,7 @@ class Negation extends Expr {
     }
 }
 
-// Using user-defined functions (not implemented yet)
+// Using user-defined functions
 class UseDef extends Expr {
     String f;
     List<Expr> args;
@@ -71,8 +70,21 @@ class UseDef extends Expr {
 
     @Override
     public Boolean eval(Environment env) {
-        error("Use of user-defined function '" + f + "' is not implemented yet.");
-        return null;
+        // Step 1: Retrieve the function definition
+        Def functionDef = env.getDef(f);
+
+        // Step 2: Create a new environment specifically for this function call
+        Environment functionEnv = new Environment(env);
+
+        // Step 3: Assign values to the function's parameters
+        for (int i = 0; i < functionDef.args.size(); i++) {
+            String param = functionDef.args.get(i);
+            Boolean argValue = args.get(i).eval(env); // Evaluate argument in the original environment
+            functionEnv.setVariable(param, argValue); // Set the parameter in the function's environment
+        }
+
+        // Step 4: Evaluate the function body in the new environment
+        return functionDef.e.eval(functionEnv);
     }
 }
 
@@ -132,15 +144,16 @@ class Trace extends AST {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(signal).append(" = ");
         for (Boolean value : values) {
             sb.append(value ? "1" : "0");
         }
+        sb.append(" ").append(signal);
         return sb.toString();
     }
 }
 
-// Main circuit class
+
+// Updated for task 3 circuit class
 class Circuit extends AST {
     String name;
     List<String> inputs;
@@ -162,98 +175,102 @@ class Circuit extends AST {
         this.updates = updates;
         this.siminputs = siminputs;
 
-        // Validate siminputs length
         if (siminputs.isEmpty()) {
             error("No simulation inputs provided.");
         }
 
-        simlength = siminputs.get(0).values.length;
+        simlength = siminputs.getFirst().values.length;
         for (Trace trace : siminputs) {
             if (trace.values.length != simlength) {
                 error("All simulation inputs must have the same length.");
             }
+        }
+
+        // Initialize simoutputs for output and latch signals
+        this.simoutputs = new ArrayList<>();
+        for (String output : outputs) {
+            simoutputs.add(new Trace(output, new Boolean[simlength]));
+        }
+        for (String latch : latches) {
+            simoutputs.add(new Trace(latch + "'", new Boolean[simlength]));
         }
     }
 
     // Initialize latch outputs to false
     public void latchesInit(Environment env) {
         for (String latch : latches) {
-            String output = latch + "'"; // Generate the output name, e.g., A -> A'
-            env.setVariable(output, false); // Initialize to false
+            env.setVariable(latch + "'", false);
         }
     }
 
     // Update latch outputs to current input values
     public void latchesUpdate(Environment env) {
         for (String latch : latches) {
-            String output = latch + "'"; // Generate the output name, e.g., A -> A'
-            Boolean value = env.getVariable(latch); // Get the current input signal
-            env.setVariable(output, value); // Update the latch output
+            env.setVariable(latch + "'", env.getVariable(latch));
         }
     }
 
     // Initialize the circuit
     public void initialize(Environment env) {
-        // Set input signals from siminputs
         for (Trace trace : siminputs) {
-            String signal = trace.signal;
-            if (trace.values.length == 0) {
-                error("Siminput for signal " + signal + " is not defined.");
-            }
-            env.setVariable(signal, trace.values[0]); // Use first value at time 0
+            env.setVariable(trace.signal, trace.values[0]);
         }
 
-        // Initialize latch inputs if not already set
         for (String latch : latches) {
             if (!env.hasVariable(latch)) {
-                env.setVariable(latch, false); // Initialize to false
+                env.setVariable(latch, false);
             }
         }
 
-        // Initialize latch outputs
         latchesInit(env);
 
-        // Evaluate all updates
         for (Update update : updates) {
             update.eval(env);
         }
 
-        // Print the environment after initialization
+        recordOutputs(env, 0);
         System.out.println("Environment after initialization:\n" + env.toString());
     }
 
     // Simulate one cycle
     public void nextCycle(Environment env, int i) {
-        // Set input signals for the current cycle
         for (Trace trace : siminputs) {
-            String signal = trace.signal;
-            if (i >= trace.values.length) {
-                error("Siminput for signal " + signal + " is not defined for time " + i + ".");
-            }
-            env.setVariable(signal, trace.values[i]); // Use i-th value for the current cycle
+            env.setVariable(trace.signal, trace.values[i]);
         }
 
-        // Update latch outputs
         latchesUpdate(env);
 
-        // Evaluate all updates
         for (Update update : updates) {
             update.eval(env);
         }
 
-        // Print the environment for the current cycle
+        recordOutputs(env, i);
         System.out.println("Environment after cycle " + i + ":\n" + env.toString());
+    }
+
+    // Record output values into simoutputs for each cycle
+    private void recordOutputs(Environment env, int cycle) {
+        for (Trace trace : simoutputs) {
+            trace.values[cycle] = env.getVariable(trace.signal);
+        }
+    }
+
+    // Print all traces after the simulation
+    public void printTraces() {
+        for (Trace trace : simoutputs) {
+            System.out.println(trace);
+        }
     }
 
     // Run the entire simulation
     public void runSimulator() {
-        Environment env = new Environment();
-        initialize(env); // Perform initialization
+        Environment env = new Environment(this.definitions);
+        initialize(env);
 
         for (int i = 1; i < simlength; i++) {
-            nextCycle(env, i); // Simulate each cycle
+            nextCycle(env, i);
         }
+
+        printTraces();
     }
 }
-
-
