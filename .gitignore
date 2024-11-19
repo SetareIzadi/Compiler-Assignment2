@@ -3,6 +3,7 @@ out/*
 /shelf/
 /workspace.xml
 .idea/*
+*.html
 # Editor-based HTTP Client requests
 /httpRequests/
 # Datasource local storage ignored files
