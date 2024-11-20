@@ -179,7 +179,7 @@ class Circuit extends AST {
             error("No simulation inputs provided.");
         }
 
-        simlength = siminputs.getFirst().values.length;
+        simlength = siminputs.get(0).values.length; // Changed from getFirst() for standard List
         for (Trace trace : siminputs) {
             if (trace.values.length != simlength) {
                 error("All simulation inputs must have the same length.");
@@ -188,12 +188,26 @@ class Circuit extends AST {
 
         // Initialize simoutputs for output and latch signals
         this.simoutputs = new ArrayList<>();
+
+        // Add outputs to simoutputs
         for (String output : outputs) {
-            simoutputs.add(new Trace(output, new Boolean[simlength]));
+            if (!output.equals("Overflow")) { // Skip Overflow for now
+                simoutputs.add(new Trace(output, new Boolean[simlength]));
+            }
         }
+
+        // Add latches to simoutputs
         for (String latch : latches) {
-            simoutputs.add(new Trace(latch + "'", new Boolean[simlength]));
+            if (!latch.equals("Overflow")) { // Skip Overflow for now
+                simoutputs.add(new Trace(latch + "'", new Boolean[simlength]));
+            }
         }
+
+        // Add Overflow once at the end (if it exists in outputs or latches)
+        if (outputs.contains("Overflow") || latches.contains("Overflow")) {
+            simoutputs.add(new Trace("Overflow", new Boolean[simlength]));
+        }
+
     }
 
     // Initialize latch outputs to false

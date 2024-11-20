@@ -1,26 +1,37 @@
+Environment after initialization:
+Oscillator	-> true
+Oscillator'	-> false
+Reset	-> false
 
+Environment after cycle 1:
+Oscillator	-> false
+Oscillator'	-> true
+Reset	-> false
 
+Environment after cycle 2:
+Oscillator	-> true
+Oscillator'	-> false
+Reset	-> false
 
-<!DOCTYPE html>
-<html><head><title> helloworld</title>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
-</script></head><body>
-<h1>helloworld</h1>
-<h2> Inputs </h2>
-Reset 
- <h2> Outputs </h2>
- Oscillator 
- <h2> Latches </h2>
-Oscillator 
- <h2> Definitions </h2>
-\(\mathit{nor}(a,b)=(\neg(\mathrm{a})\wedge\neg(\mathrm{b}))\)<br>
+Environment after cycle 3:
+Oscillator	-> false
+Oscillator'	-> true
+Reset	-> false
 
- <h2> Updates </h2>
-Oscillator&larr;\(\mathit{nor}(\mathrm{Oscillator'},\mathrm{Reset})\)<br>
+Environment after cycle 4:
+Oscillator	-> false
+Oscillator'	-> false
+Reset	-> true
 
- <h2> Simulation inputs </h2>
-<b>Reset</b>: 0000100<br>
+Environment after cycle 5:
+Oscillator	-> true
+Oscillator'	-> false
+Reset	-> false
 
-</body></html>
+Environment after cycle 6:
+Oscillator	-> false
+Oscillator'	-> true
+Reset	-> false
 
+1010010 Oscillator
+0101001 Oscillator'

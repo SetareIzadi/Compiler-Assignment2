@@ -1,31 +1,164 @@
+Environment after initialization:
+Red	-> false
+Red'	-> false
+Yel	-> false
+PGreen	-> false
+PRed	-> true
+Button	-> false
+Clr	-> false
+Yel'	-> false
+Green	-> true
+Req	-> false
+Req'	-> false
 
+Environment after cycle 1:
+Red	-> false
+Red'	-> false
+Yel	-> false
+PGreen	-> false
+PRed	-> true
+Button	-> false
+Clr	-> false
+Yel'	-> false
+Green	-> true
+Req	-> false
+Req'	-> false
 
+Environment after cycle 2:
+Red	-> false
+Red'	-> false
+Yel	-> true
+PGreen	-> false
+PRed	-> true
+Button	-> true
+Clr	-> false
+Yel'	-> false
+Green	-> false
+Req	-> true
+Req'	-> false
 
-<!DOCTYPE html>
-<html><head><title> trafiklys</title>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
-</script></head><body>
-<h1>trafiklys</h1>
-<h2> Inputs </h2>
-Button 
- <h2> Outputs </h2>
- Red Yel Green PRed PGreen 
- <h2> Latches </h2>
-Red Yel Req 
- <h2> Definitions </h2>
+Environment after cycle 3:
+Red	-> true
+Red'	-> false
+Yel	-> false
+PGreen	-> true
+PRed	-> false
+Button	-> false
+Clr	-> false
+Yel'	-> true
+Green	-> false
+Req	-> true
+Req'	-> true
 
- <h2> Updates </h2>
-Clr&larr;\((\mathrm{Red'}\wedge\neg(\mathrm{Yel'}))\)<br>
-Req&larr;\(((\mathrm{Req'}\vee\mathrm{Button})\wedge\neg(\mathrm{Clr}))\)<br>
-Red&larr;\(((\neg(\mathrm{Red'})\wedge\mathrm{Yel'})\vee(\mathrm{Red'}\wedge\neg(\mathrm{Yel'})))\)<br>
-Yel&larr;\((((\neg(\mathrm{Red'})\wedge\neg(\mathrm{Yel'}))\wedge\mathrm{Req})\vee(\mathrm{Red'}\wedge\neg(\mathrm{Yel'})))\)<br>
-Green&larr;\((\neg(\mathrm{Red})\wedge\neg(\mathrm{Yel}))\)<br>
-PGreen&larr;\((\mathrm{Red}\wedge\neg(\mathrm{Yel}))\)<br>
-PRed&larr;\(\neg(\mathrm{PGreen})\)<br>
+Environment after cycle 4:
+Red	-> true
+Red'	-> true
+Yel	-> true
+PGreen	-> false
+PRed	-> true
+Button	-> false
+Clr	-> true
+Yel'	-> false
+Green	-> false
+Req	-> false
+Req'	-> true
 
- <h2> Simulation inputs </h2>
-<b>Button</b>: 001001111001<br>
+Environment after cycle 5:
+Red	-> false
+Red'	-> true
+Yel	-> false
+PGreen	-> false
+PRed	-> true
+Button	-> true
+Clr	-> false
+Yel'	-> true
+Green	-> true
+Req	-> true
+Req'	-> false
 
-</body></html>
+Environment after cycle 6:
+Red	-> false
+Red'	-> false
+Yel	-> true
+PGreen	-> false
+PRed	-> true
+Button	-> true
+Clr	-> false
+Yel'	-> false
+Green	-> false
+Req	-> true
+Req'	-> true
 
+Environment after cycle 7:
+Red	-> true
+Red'	-> false
+Yel	-> false
+PGreen	-> true
+PRed	-> false
+Button	-> true
+Clr	-> false
+Yel'	-> true
+Green	-> false
+Req	-> true
+Req'	-> true
+
+Environment after cycle 8:
+Red	-> true
+Red'	-> true
+Yel	-> true
+PGreen	-> false
+PRed	-> true
+Button	-> true
+Clr	-> true
+Yel'	-> false
+Green	-> false
+Req	-> false
+Req'	-> true
+
+Environment after cycle 9:
+Red	-> false
+Red'	-> true
+Yel	-> false
+PGreen	-> false
+PRed	-> true
+Button	-> false
+Clr	-> false
+Yel'	-> true
+Green	-> true
+Req	-> false
+Req'	-> false
+
+Environment after cycle 10:
+Red	-> false
+Red'	-> false
+Yel	-> false
+PGreen	-> false
+PRed	-> true
+Button	-> false
+Clr	-> false
+Yel'	-> false
+Green	-> true
+Req	-> false
+Req'	-> false
+
+Environment after cycle 11:
+Red	-> false
+Red'	-> false
+Yel	-> true
+PGreen	-> false
+PRed	-> true
+Button	-> true
+Clr	-> false
+Yel'	-> false
+Green	-> false
+Req	-> true
+Req'	-> false
+
+000110011000 Red
+001010101001 Yel
+110001000110 Green
+111011101111 PRed
+000100010000 PGreen
+000011001100 Red'
+000101010100 Yel'
+000110111000 Req'
